@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AgriSahayak</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --light-bg: #f4f7f6;
+            --white: #ffffff;
+            --sidebar-width: 250px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: var(--light-bg); display: flex; overflow-x: hidden; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeInUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* SIDEBAR */
+        .sidebar { width: var(--sidebar-width); height: 100vh; background: var(--primary); color: white; position: fixed; padding: 20px; display: flex; flex-direction: column; z-index: 100; animation: slideInLeft 0.5s ease-out; }
+        .logo { font-size: 1.5rem; font-weight: bold; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .menu-item { display: block; padding: 15px; color: rgba(255,255,255,0.8); text-decoration: none; border-radius: 10px; margin-bottom: 10px; transition: 0.3s; }
+        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.2); color: white; transform: translateX(5px); }
+
+        /* MAIN CONTENT */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .lang-select { padding: 8px 15px; border-radius: 20px; border: 1px solid var(--primary); background: white; color: var(--primary); font-weight: bold; cursor: pointer; outline: none; margin-right: 20px; }
+        
+        /* USER PROFILE DROPDOWN STYLES */
+        .user-profile { 
+            display: flex; align-items: center; gap: 15px; cursor: pointer; position: relative; 
+            padding: 5px 10px; border-radius: 10px; transition: 0.3s;
+        }
+        .user-profile:hover { background: rgba(0,0,0,0.05); }
+        .user-info { text-align: right; }
+        .user-name { font-weight: bold; font-size: 1rem; color: #333; }
+        .user-role { font-size: 0.8rem; color: #777; }
+        .user-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+
+        /* THE DROPDOWN MENU */
+        .profile-dropdown {
+            position: absolute;
+            top: 70px; right: 0;
+            background: white;
+            width: 180px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+            animation: fadeInUp 0.2s ease-out;
+        }
+        .profile-dropdown a {
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            display: flex; align-items: center; gap: 10px;
+            border-bottom: 1px solid #f4f7f6;
+        }
+        .profile-dropdown a:last-child { border-bottom: none; }
+        .profile-dropdown a:hover { background: #e8f5e9; color: var(--primary); }
+
+        /* GRID SYSTEM */
+        .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: all 0.3s ease; cursor: pointer; border-left: 5px solid var(--primary); display: flex; flex-direction: column; justify-content: space-between; height: 100%; opacity: 0; animation: fadeInUp 0.6s ease-out forwards; }
+        .card:nth-child(1) { animation-delay: 0.1s; } .card:nth-child(2) { animation-delay: 0.2s; } .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .card-icon { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; transition: transform 0.3s;}
+        .card:hover .card-icon { transform: rotate(10deg); }
+        .card h3 { margin-bottom: 10px; font-size: 1.2rem; }
+        .card p { font-size: 0.9rem; color: #666; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; position: relative; text-align: center; animation: fadeInUp 0.4s; max-height: 90vh; overflow-y: auto; }
+        .close-btn { position: absolute; right: 20px; top: 20px; cursor: pointer; font-size: 1.5rem; color: #666;}
+        
+        .upload-options { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+        .option-btn { flex: 1; padding: 15px; border: 2px dashed #ccc; border-radius: 10px; cursor: pointer; transition: 0.3s; background: #f9f9f9; }
+        .option-btn:hover { border-color: var(--primary); background: #e8f5e9; }
+        #camera-container { display: none; margin-bottom: 15px; }
+        #camera-stream { width: 100%; border-radius: 10px; background: #000; }
+        #capture-btn { background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; border: none; margin-top: 5px; cursor: pointer; }
+        #imagePreview { max-width: 100%; max-height: 250px; margin: 15px auto; display: none; border-radius: 10px; border: 2px solid var(--primary); }
+        .action-btn { background: var(--primary); color: white; padding: 12px 25px; border: none; border-radius: 30px; cursor: pointer; width: 100%; font-size: 1rem; transition: 0.3s; margin-top: 10px;}
+        .action-btn:hover { background: #1b5e20; transform: scale(1.05); }
+        .reset-btn { background: #e0e0e0; color: #333; padding: 8px 20px; border: none; border-radius: 20px; cursor: pointer; margin-top: 10px; display: none; }
+        .reset-btn:hover { background: #ccc; }
+
+        /* CHATBOT */
+        .chat-toggle { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 3000; transition: transform 0.3s; animation: pulse 3s infinite; }
+        .chat-window { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 5px 30px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; z-index: 3000; animation: fadeInUp 0.3s ease-out; }
+        .chat-header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold;}
+        .chat-body { flex: 1; padding: 15px; background: #f9f9f9; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .chat-msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.9rem; line-height: 1.4; }
+        .bot-msg { background: #e8f5e9; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .user-msg { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-footer { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
+        .chat-footer input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
+        .chat-footer button { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: 0.2s;}
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class="fas fa-seedling"></i> AgriSahayak</div>
+        <a href="#" class="menu-item active"><i class="fas fa-th-large"></i> <span data-i18n="dashboard">Dashboard</span></a>
+        <a href="#" class="menu-item"><i class="fas fa-user"></i> <span data-i18n="profile">My Profile</span></a>
+        <a href="#" class="menu-item"><i class="fas fa-history"></i> <span data-i18n="history">History</span></a>
+        </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2 id="welcome-msg">Welcome Back!</h2>
+            <div style="display: flex; align-items: center;">
+                <select class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी (Hindi)</option>
+                    <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                </select>
+                
+                <div class="user-profile" onclick="toggleProfileMenu(event)">
+                    <div class="user-info">
+                        <div class="user-name" id="display-name">Guest User</div>
+                        <div class="user-role" data-i18n="role">Premium Farmer</div>
+                    </div>
+                    <img id="display-img" class="user-img" src="" alt="User">
+                    
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="#" onclick="alert('Profile Page Coming Soon!')"><i class="fas fa-user-circle"></i> View Profile</a>
+                        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Logout</span></a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="service-grid">
+            <div class="card" onclick="alert('Feature: Crop Recommendation Logic')">
+                <div><i class="fas fa-wheat-awn card-icon"></i><h3 data-i18n="card1_title">Crop Recommendation</h3><p data-i18n="card1_desc">AI advice based on soil & season.</p></div>
+            </div>
+            <div class="card" onclick="alert('Feature: Fertilizer Calculator')">
+                <div><i class="fas fa-flask card-icon"></i><h3 data-i18n="card2_title">Fertilizer Calculator</h3><p data-i18n="card2_desc">Calculate NPK dosage.</p></div>
+            </div>
+            <div class="card" onclick="openModal('pestModal')">
+                <div><i class="fas fa-camera card-icon"></i><h3 data-i18n="card3_title">Pest & Disease</h3><p data-i18n="card3_desc">Upload a leaf photo for instant AI diagnosis.</p></div>
+            </div>
+            <div class="card">
+                <div><i class="fas fa-cloud-sun card-icon"></i><h3 data-i18n="card4_title">Weather Alerts</h3><p data-i18n="card4_desc">Local forecasts & warnings.</p></div>
+            </div>
+            <div class="card">
+                <div><i class="fas fa-store card-icon"></i><h3 data-i18n="card5_title">Mandi Prices</h3><p data-i18n="card5_desc">Live market rates.</p></div>
+            </div>
+            <div class="card">
+                <div><i class="fas fa-landmark card-icon"></i><h3 data-i18n="card6_title">Govt Schemes</h3><p data-i18n="card6_desc">Subsidy & loan eligibility.</p></div>
+            </div>
+            <div class="card">
+                <div><i class="fas fa-drone card-icon"></i><h3 data-i18n="card7_title">Digital Farming</h3><p data-i18n="card7_desc">Drones, IoT & precision tools.</p></div>
+            </div>
+            <div class="card">
+                <div><i class="fas fa-leaf card-icon"></i><h3 data-i18n="card8_title">Organic Tips</h3><p data-i18n="card8_desc">Natural farming guidance.</p></div>
+            </div>
+            <div class="card" onclick="toggleChat()">
+                <div><i class="fas fa-robot card-icon"></i><h3 data-i18n="card9_title">AI Assistant</h3><p data-i18n="card9_desc">Chat with our bot.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pestModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closePestModal()">&times;</span>
+            <h3 data-i18n="modal_title">🌱 Plant Disease Detection</h3>
+            <p data-i18n="modal_desc" style="margin-bottom: 20px;">Choose a method to scan the leaf.</p>
+            <div class="upload-options">
+                <div class="option-btn" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 30px; color: var(--primary);"></i>
+                    <p style="font-size: 0.9rem;">Upload Image</p>
+                </div>
+                <div class="option-btn" onclick="startCamera()">
+                    <i class="fas fa-camera" style="font-size: 30px; color: var(--primary);"></i>
+                    <p style="font-size: 0.9rem;">Use Camera</p>
+                </div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="previewFile(event)">
+            <div id="camera-container">
+                <video id="camera-stream" autoplay playsinline></video>
+                <button id="capture-btn" onclick="capturePhoto()"><i class="fas fa-dot-circle"></i> Capture Photo</button>
+            </div>
+            <canvas id="camera-canvas" style="display: none;"></canvas>
+            <img id="imagePreview" src="" alt="Preview">
+            <button class="action-btn" onclick="analyzeImage()" data-i18n="analyze_btn">Analyze Disease</button>
+            <button class="reset-btn" id="resetBtn" onclick="resetModal()">Scan Another</button>
+            <p id="resultText" style="margin-top: 15px; font-weight: bold; color: var(--primary);"></p>
+        </div>
+    </div>
+
+    <div class="chat-toggle" onclick="toggleChat()">
+        <i class="fas fa-comments"></i>
+    </div>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <span>Agri Assistant</span>
+            <span style="cursor:pointer" onclick="toggleChat()">&times;</span>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="chat-msg bot-msg" data-i18n="bot_welcome">Namaste! How can I help you?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="..." onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // --- USER & MENU LOGIC ---
+        let displayName = localStorage.getItem("agriUser") || "Farmer";
+        const currentUserData = localStorage.getItem("currentUser");
+        if (currentUserData) {
+            const userObj = JSON.parse(currentUserData);
+            if(userObj.fullName) displayName = userObj.fullName;
+        }
+        document.getElementById("welcome-msg").innerText = `Welcome Back, ${displayName}!`;
+        document.getElementById("display-name").innerText = displayName;
+        document.getElementById("display-img").src = `https://ui-avatars.com/api/?name=${displayName}&background=2e7d32&color=fff&size=128`;
+        
+        // Toggle Profile Dropdown
+        function toggleProfileMenu(event) {
+            const menu = document.getElementById('profileDropdown');
+            menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+            event.stopPropagation(); // Stop click from propagating to window
+        }
+
+        // Close menu when clicking outside
+        window.onclick = function(event) {
+            const menu = document.getElementById('profileDropdown');
+            if (menu.style.display === 'flex' && !event.target.closest('.user-profile')) {
+                menu.style.display = 'none';
+            }
+        }
+
+        function logout() { localStorage.removeItem("currentUser"); window.location.href = "login.html"; }
+
+        // --- TRANSLATION LOGIC (Keep existing logic) ---
+        const translations = {
+            en: { dashboard: "Dashboard", profile: "My Profile", history: "History", logout: "Logout", role: "Premium Farmer", card1_title: "Crop Recommendation", card1_desc: "AI advice based on soil & season.", card2_title: "Fertilizer Calculator", card2_desc: "Calculate NPK dosage.", card3_title: "Pest & Disease", card3_desc: "Upload leaf photo for diagnosis.", card4_title: "Weather Alerts", card4_desc: "Local forecasts & warnings.", card5_title: "Mandi Prices", card5_desc: "Live market rates.", card6_title: "Govt Schemes", card6_desc: "Subsidy & loan eligibility.", card7_title: "Digital Farming", card7_desc: "Drones, IoT & precision tools.", card8_title: "Organic Tips", card8_desc: "Natural farming guidance.", card9_title: "AI Assistant", card9_desc: "Chat with our bot.", modal_title: "🌱 Plant Disease Detection", modal_desc: "Upload a clear photo of the leaf.", upload_text: "Click to Upload Image", analyze_btn: "Analyze Disease", bot_welcome: "Namaste! How can I help you?" },
+            hi: { dashboard: "डैशबोर्ड", profile: "मेरी प्रोफाइल", history: "इतिहास", logout: "लॉग आउट", role: "प्रीमियम किसान", card1_title: "फसल सुझाव", card1_desc: "मिट्टी और मौसम आधारित सलाह।", card2_title: "उर्वरक कैलकुलेटर", card2_desc: "NPK की सही मात्रा जानें।", card3_title: "कीट और रोग", card3_desc: "पत्ते की फोटो से रोग पहचानें।", card4_title: "मौसम चेतावनी", card4_desc: "स्थानीय पूर्वानुमान और अलर्ट।", card5_title: "बाज़ार भाव", card5_desc: "ताज़ा मंडी रेट्स।", card6_title: "सरकारी योजनाएं", card6_desc: "सब्सिडी और लोन की जानकारी।", card7_title: "डिजिटल खेती", card7_desc: "ड्रोन और आधुनिक तकनीक।", card8_title: "जैविक खेती", card8_desc: "प्राकृतिक खेती के सुझाव।", card9_title: "AI सहायक", card9_desc: "हमारे बॉट से बात करें।", modal_title: "🌱 पौधों के रोग की पहचान", modal_desc: "प्रभावित पत्ते की फोटो अपलोड करें।", upload_text: "फोटो अपलोड करने के लिए क्लिक करें", analyze_btn: "रोग की जांच करें", bot_welcome: "नमस्ते! मैं आपकी क्या सहायता कर सकता हूँ?" },
+            or: { dashboard: "ଡ୍ୟାସବୋର୍ଡ", profile: "ମୋର ପ୍ରୋଫାଇଲ୍", history: "ଇତିହାସ", logout: "ଲଗ୍ ଆଉଟ୍", role: "ପ୍ରିମିୟମ୍ କୃଷକ", card1_title: "ଫସଲ ପରାମର୍ଶ", card1_desc: "ମୃତ୍ତିକା ଏବଂ ଋତୁ ଉପରେ ଆଧାରିତ ପରାମର୍ଶ |", card2_title: "ସାର ଗଣନା", card2_desc: "NPK ର ସଠିକ୍ ପରିମାଣ ଜାଣନ୍ତୁ |", card3_title: "କୀଟ ଏବଂ ରୋଗ", card3_desc: "ପତ୍ରର ଫଟୋ ଦେଇ ରୋଗ ଚିହ୍ନଟ କରନ୍ତୁ |", card4_title: "ପାଣିପାଗ", card4_desc: "ସ୍ଥାନୀୟ ପାଣିପାଗ ସୂଚନା |", card5_title: "ବଜାର ଦର", card5_desc: "ମଣ୍ଡିର ସର୍ବଶେଷ ଦର |", card6_title: "ସରକାରୀ ଯୋଜନା", card6_desc: "ଋଣ ଏବଂ ସବସିଡି ସୂଚନା |", card7_title: "ଡିଜିଟାଲ୍ ଚାଷ", card7_desc: "ଡ୍ରୋନ୍ ଏବଂ ଆଧୁନିକ ଯନ୍ତ୍ରପାତି |", card8_title: "ଜୈବିକ ଚାଷ", card8_desc: "ପ୍ରାକୃତିକ ଚାଷ ପାଇଁ ପରାମର୍ଶ |", card9_title: "AI ସହାୟକ", card9_desc: "ଆମର ବଟ୍ ସହିତ କଥା ହୁଅନ୍ତୁ |", modal_title: "🌱 ରୋଗ ଚିହ୍ନଟ", modal_desc: "ପ୍ରଭାବିତ ପତ୍ରର ଏକ ଫଟୋ ଅପଲୋଡ୍ କରନ୍ତୁ |", upload_text: "ଫଟୋ ଅପଲୋଡ୍ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ", analyze_btn: "ଯାଞ୍ଚ କରନ୍ତୁ", bot_welcome: "ନମସ୍କାର! ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?" }
+        };
+
+        function changeLanguage(lang) {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) { el.innerText = translations[lang][key]; }
+            });
+            document.getElementById("welcome-msg").innerText = (lang === 'or' ? 'ସ୍ୱାଗତମ୍, ' : (lang === 'hi' ? 'स्वागत है, ' : 'Welcome Back, ')) + displayName + '!';
+        }
+
+        // --- CAMERA & MODAL LOGIC (UPDATED) ---
+        let cameraStream = null;
+        let currentImageBlob = null; 
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        
+        function closePestModal() {
+            stopCamera(); 
+            resetModal(); 
+            document.getElementById('pestModal').style.display = 'none';
+        }
+
+        function resetModal() {
+            currentImageBlob = null;
+            document.getElementById('fileInput').value = ""; 
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('imagePreview').src = "";
+            document.getElementById('resultText').innerText = "";
+            document.getElementById('resetBtn').style.display = 'none';
+            stopCamera();
+            document.getElementById('camera-container').style.display = 'none';
+        }
+
+        function previewFile(event) {
+            stopCamera(); 
+            const file = event.target.files[0];
+            if (file) {
+                currentImageBlob = file; 
+                const reader = new FileReader();
+                reader.onload = function(){
+                    const output = document.getElementById('imagePreview');
+                    output.src = reader.result;
+                    output.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function startCamera() {
+            document.getElementById('camera-container').style.display = 'block';
+            document.getElementById('imagePreview').style.display = 'none'; 
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.getElementById('camera-stream').srcObject = cameraStream;
+            } catch (err) {
+                alert("Camera access denied or not available!");
+                console.error(err);
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-stream');
+            const canvas = document.getElementById('camera-canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(function(blob) {
+                currentImageBlob = blob; 
+                const url = URL.createObjectURL(blob);
+                const output = document.getElementById('imagePreview');
+                output.src = url;
+                output.style.display = 'block';
+                stopCamera();
+                document.getElementById('camera-container').style.display = 'none';
+            }, 'image/png');
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+        }
+
+        async function analyzeImage() {
+            const resultText = document.getElementById('resultText');
+            if (!currentImageBlob) {
+                alert("Please select or capture an image first!");
+                return;
+            }
+            const formData = new FormData();
+            formData.append('file', currentImageBlob, 'scan.png');
+            resultText.innerText = "Scanning with AI... (Please wait)";
+            resultText.style.color = "#2e7d32";
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.error) {
+                    resultText.innerText = "Error: " + data.error;
+                    resultText.style.color = "red";
+                } else {
+                    resultText.innerHTML = `
+                        <strong>Disease:</strong> ${data.result}<br>
+                        <strong>Confidence:</strong> ${data.confidence}<br>
+                        <strong style="color:#d32f2f">Remedy:</strong> ${data.remedy}
+                    `;
+                    document.getElementById('resetBtn').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultText.innerText = "Failed to connect to AI Server.";
+                resultText.style.color = "red";
+            }
+        }
+
+        // --- CHATBOT ---
+        const chatWindow = document.getElementById('chatWindow');
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        function toggleChat() { chatWindow.style.display = (chatWindow.style.display === 'flex') ? 'none' : 'flex'; }
+        function handleEnter(e) { if(e.key === 'Enter') sendMessage(); }
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if(!text) return;
+            addMessage(text, 'user-msg');
+            chatInput.value = '';
+            setTimeout(() => { addMessage("Thinking...", 'bot-msg'); }, 1000);
+        }
+        function addMessage(text, type) {
+            const div = document.createElement('div');
+            div.classList.add('chat-msg', type);
+            div.innerText = text;
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    </script>
+</body>
+</html>

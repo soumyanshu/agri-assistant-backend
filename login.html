@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSahayak - Secure Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- GLOBAL STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            /* Background Image with Dark Overlay */
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("image/agrilogin.jpg");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- BRAND LOGO (Top Right) --- */
+        .brand-logo {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center
+            gap: 10px;
+            z-index: 1000;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .brand-logo i {
+            color: #2e7d32; /* Primary Green */
+            font-size: 2rem;
+        }
+
+        /* --- HOME BUTTON (Top Left) --- */
+        .back-home {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-home:hover {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .container {
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(46, 125, 50, 0.5), 
+                        0 0 40px rgba(46, 125, 50, 0.2);
+            border: 1px solid #2e7d32;
+            position: relative;
+            overflow: hidden;
+            width: 850px; 
+            max-width: 100%;
+            min-height: 580px; 
+        }
+
+        /* --- FORMS --- */
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            transition: all 0.6s ease-in-out;
+        }
+
+        form {
+            background-color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            height: 100%;
+            text-align: center;
+            color: #fff;
+        }
+
+        h1 {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        /* --- INPUT FIELDS STYLING --- */
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin: 6px 0; 
+        }
+
+        .input-group input {
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid #555;
+            padding: 10px 30px 10px 10px; 
+            width: 100%;
+            color: #fff;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .input-group input:focus {
+            border-bottom: 1px solid #2e7d32;
+        }
+
+        .input-group .icon-left {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+            pointer-events: none;
+        }
+
+        .input-group .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2e7d32;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* OTP Section styling */
+        .otp-wrapper {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            align-items: flex-end;
+        }
+        .btn-otp {
+            padding: 8px 15px;
+            font-size: 0.7rem;
+            background: #444;
+            border: 1px solid #777;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+        .btn-otp:hover { background: #2e7d32; border-color: #2e7d32; }
+
+        /* --- MAIN FORM BUTTONS (Login/Register) --- */
+        button.btn-glow {
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(to right, #2e7d32, #1b5e20);
+            color: #FFFFFF;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 12px 50px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4);
+        }
+
+        button.btn-glow:hover {
+            transform: scale(1.05);
+            background: linear-gradient(to right, #388e3c, #2e7d32);
+        }
+
+        /* --- SWITCH BUTTONS (Ghost Buttons) --- */
+        button.ghost {
+            background: rgba(255, 255, 255, 0.1); 
+            border: 2px solid #FFFFFF; 
+            border-radius: 25px;
+            color: #FFFFFF;
+            font-size: 13px;
+            font-weight: 700; 
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.4s ease; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button.ghost:hover {
+            background-color: #FFFFFF; 
+            color: #2e7d32; 
+            transform: translateY(-3px); 
+            box-shadow: 0 7px 20px rgba(255,255,255,0.4); 
+        }
+
+        button.ghost:active {
+            transform: scale(0.95);
+        }
+
+        /* --- ANIMATION LOGIC --- */
+        .sign-in-container { left: 0; width: 50%; z-index: 2; }
+        .sign-up-container { left: 0; width: 50%; opacity: 0; z-index: 1; }
+
+        .container.right-panel-active .sign-in-container { transform: translateX(100%); }
+        .container.right-panel-active .sign-up-container {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+            animation: show 0.6s;
+        }
+
+        @keyframes show {
+            0%, 49.99% { opacity: 0; z-index: 1; }
+            50%, 100% { opacity: 1; z-index: 5; }
+        }
+
+        /* --- OVERLAY --- */
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
+            z-index: 100;
+        }
+
+        .container.right-panel-active .overlay-container { transform: translateX(-100%); }
+
+        .overlay {
+            background: linear-gradient(to right, #1a1a1a, #1b5e20);
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 0 0;
+            color: #FFFFFF;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .container.right-panel-active .overlay { transform: translateX(50%); }
+
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .overlay-left { transform: translateX(-20%); background: linear-gradient(135deg, #1a1a1a 0%, #1b5e20 100%); }
+        .container.right-panel-active .overlay-left { transform: translateX(0); }
+        .overlay-right { right: 0; transform: translateX(0); background: linear-gradient(135deg, #1b5e20 0%, #1a1a1a 100%); }
+        .container.right-panel-active .overlay-right { transform: translateX(20%); }
+
+        /* --- CUSTOM POPUP MESSAGE --- */
+        #custom-alert {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 2000;
+            border-left: 5px solid #2e7d32;
+            text-align: center;
+            min-width: 320px;
+            font-size: 1rem;
+            animation: slideDown 0.4s ease;
+        }
+        @keyframes slideDown { from { top: -100px; opacity: 0; } to { top: 20px; opacity: 1; } }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .container { width: 90%; min-height: 650px; }
+            .overlay-container { display: none; }
+            .form-container { width: 100%; position: absolute; }
+            .sign-up-container { opacity: 0; z-index: 1; transform: translateX(0) !important; }
+            .sign-in-container { z-index: 2; transform: translateX(0) !important; }
+            .container.right-panel-active .sign-up-container { opacity: 1; z-index: 5; }
+            .container.right-panel-active .sign-in-container { opacity: 0; z-index: 1; }
+            
+            .brand-logo { top: 20px; right: 20px; font-size: 1.2rem; }
+            .back-home { top: 20px; left: 20px; padding: 8px 15px; }
+
+            /* Mobile Switch Styling */
+            .mobile-switch { display: block; margin-top: 20px; font-size: 13px; }
+            .mobile-switch span { 
+                color: #4caf50; 
+                font-weight: bold; 
+                cursor: pointer; 
+                text-transform: uppercase;
+                margin-left: 5px;
+                text-decoration: underline;
+            }
+        }
+        .mobile-switch { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="custom-alert">Message goes here</div>
+
+    <div class="brand-logo">
+        <i class="fas fa-seedling"></i> AgriSahayak
+    </div>
+
+    <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Home</a>
+
+    <div class="container" id="container">
+        
+        <div class="form-container sign-up-container">
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <h1>Create Account</h1>
+                
+                <div class="input-group">
+                    <input type="text" id="regFullName" placeholder="Full Name" required />
+                    <i class="fas fa-id-card icon-left"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="regUser" placeholder="Username" required />
+                    <i class="fas fa-user icon-left"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" id="regEmail" placeholder="Email" required />
+                    <i class="fas fa-envelope icon-left"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="regPass" placeholder="Password" required />
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('regPass', this)"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="regConfirmPass" placeholder="Confirm Password" required />
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('regConfirmPass', this)"></i>
+                </div>
+
+                <div class="otp-wrapper">
+                    <div class="input-group">
+                        <input type="text" id="regOTP" placeholder="Enter 4-digit OTP" required />
+                    </div>
+                    <button type="button" class="btn-otp" onclick="generateOTP()">Get OTP</button>
+                </div>
+
+                <button class="btn-glow" type="submit">Register</button>
+                <p class="mobile-switch">Already have an account? <span id="signInMobile">Sign In</span></p>
+            </form>
+        </div>
+
+        <div class="form-container sign-in-container">
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <h1>Login</h1>
+                
+                <div class="input-group">
+                    <input type="text" id="loginUser" placeholder="Username" required />
+                    <i class="fas fa-user icon-left"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="loginPass" placeholder="Password" required />
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPass', this)"></i>
+                </div>
+
+                <button class="btn-glow" type="submit">Login</button>
+                <p class="mobile-switch">Don't have an account? <span id="signUpMobile">Sign Up</span></p>
+            </form>
+        </div>
+
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>WELCOME!</h1>
+                    <p>Enter your details and start your farming journey with us.</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>WELCOME BACK!</h1>
+                    <p>To keep connected with us please login with your personal info.</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. UI SWITCH LOGIC ---
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+        const container = document.getElementById('container');
+        const signUpMobile = document.getElementById('signUpMobile');
+        const signInMobile = document.getElementById('signInMobile');
+
+        function showSignUp() { container.classList.add("right-panel-active"); }
+        function showSignIn() { container.classList.remove("right-panel-active"); }
+
+        signUpButton.addEventListener('click', showSignUp);
+        signInButton.addEventListener('click', showSignIn);
+        if(signUpMobile) signUpMobile.addEventListener('click', showSignUp);
+        if(signInMobile) signInMobile.addEventListener('click', showSignIn);
+
+        // --- 2. ALERT SYSTEM ---
+        function showAlert(msg, type = 'success') {
+            const alertBox = document.getElementById('custom-alert');
+            alertBox.innerText = msg;
+            alertBox.style.display = 'block';
+            
+            if(type === 'error') {
+                alertBox.style.borderLeftColor = '#ff4444';
+            } else {
+                alertBox.style.borderLeftColor = '#2e7d32';
+            }
+
+            setTimeout(() => { alertBox.style.display = 'none'; }, 4000);
+        }
+
+        // --- 3. PASSWORD TOGGLE LOGIC ---
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
+        // --- 4. OTP GENERATION ---
+        let generatedOTP = null;
+
+        function generateOTP() {
+            generatedOTP = Math.floor(1000 + Math.random() * 9000);
+            showAlert(`Your OTP code is: ${generatedOTP}`, 'success');
+        }
+
+        // --- 5. REGISTER LOGIC ---
+        function handleRegister(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('regFullName').value;
+            const username = document.getElementById('regUser').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const confirmPass = document.getElementById('regConfirmPass').value;
+            const enteredOTP = document.getElementById('regOTP').value;
+
+            // Basic Validation
+            if(pass !== confirmPass) {
+                showAlert("Passwords do not match!", 'error');
+                return;
+            }
+
+            // OTP Validation
+            if(!generatedOTP) {
+                showAlert("Please click 'Get OTP' first.", 'error');
+                return;
+            }
+            if(parseInt(enteredOTP) !== generatedOTP) {
+                showAlert("Invalid OTP Code!", 'error');
+                return;
+            }
+
+            // Check if user exists
+            let users = JSON.parse(localStorage.getItem('agriUsers')) || [];
+            const userExists = users.some(user => user.username === username);
+
+            if(userExists) {
+                showAlert("Account already exists! Please Login.", 'error');
+                return;
+            }
+
+            // Register Success
+            const newUser = { fullName, username, email, pass };
+            users.push(newUser);
+            localStorage.setItem('agriUsers', JSON.stringify(users));
+
+            showAlert("Registration Successful! Please Login.", 'success');
+            
+            document.getElementById('registerForm').reset();
+            generatedOTP = null; 
+
+            setTimeout(() => {
+                showSignIn();
+            }, 1500);
+        }
+
+        // --- 6. LOGIN LOGIC ---
+        function handleLogin(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+
+            let users = JSON.parse(localStorage.getItem('agriUsers')) || [];
+            const validUser = users.find(user => user.username === username && user.pass === pass);
+
+            if(validUser) {
+                localStorage.setItem('currentUser', JSON.stringify(validUser));
+                window.location.href = "dashboard.html"; 
+            } else {
+                showAlert("Invalid Username or Password", 'error');
+            }
+        }
+    </script>
+</body>
+</html>

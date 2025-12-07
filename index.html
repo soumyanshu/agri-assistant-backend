@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSahayak | The Future of Farming</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES & GLOBAL RESET --- */
+        :root {
+            --primary: #2e7d32;      /* Deep Green for agriculture */
+            --secondary: #81c784;    /* Light Green */
+            --accent: #fbc02d;       /* Harvest Gold for highlights */
+            --dark: #1b1b1b;         /* Dark text */
+            --light: #f4f7f6;        /* Light background grey */
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--light); color: var(--dark); line-height: 1.6; }
+
+        /* --- NAVIGATION BAR --- */
+        nav {
+            background: var(--white);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky; 
+            top: 0;
+            z-index: 1000;
+        }
+        .logo { font-size: 1.8rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .nav-links { list-style: none; display: flex; gap: 30px; align-items: center; }
+        .nav-links a { text-decoration: none; color: var(--dark); font-weight: 500; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        .btn-nav { background: var(--primary); color: var(--white) !important; padding: 8px 20px; border-radius: 25px; }
+        .btn-nav:hover { background: #1b5e20; }
+
+        /* Language Selector Style */
+        .lang-select {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 90vh; 
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("image/agrihome.jpg");
+            background-size: cover; 
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 20px;
+        }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 20px; text-transform: capitalize; font-weight: 600; }
+        .hero p { font-size: 1.2rem; margin-bottom: 30px; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .btn-hero { 
+            padding: 15px 40px; background: var(--accent); color: var(--dark); 
+            text-decoration: none; font-weight: bold; border-radius: 30px; 
+            transition: transform 0.3s; display: inline-block;
+        }
+        .btn-hero:hover { transform: scale(1.05); background: #f9a825; }
+
+        /* --- ABOUT SECTION --- */
+        .about { padding: 6rem 10%; background: var(--white); }
+        .about-container { display: flex; flex-wrap: wrap; align-items: center; gap: 50px; }
+        .about-img { flex: 1; min-width: 300px; }
+        .about-img img { width: 100%; border-radius: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .about-text { flex: 1; min-width: 300px; }
+        .section-header { color: var(--primary); font-size: 1rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .about-text h2 { font-size: 2.5rem; margin: 10px 0 20px; line-height: 1.2; }
+        .about-text p { margin-bottom: 20px; color: #555; font-size: 1.05rem;}
+
+        /* --- FEATURES SECTION --- */
+        .features { padding: 6rem 5%; background: var(--light); text-align: center; }
+        .features h2 { font-size: 2.5rem; margin-bottom: 3rem; }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .feature-card:hover { transform: translateY(-10px); border-bottom: 4px solid var(--primary); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .icon-box { 
+            width: 80px; height: 80px; background: #e8f5e9; color: var(--primary); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 2rem; margin: 0 auto 25px; transition: 0.3s;
+        }
+        .feature-card:hover .icon-box { background: var(--primary); color: var(--white); }
+        .feature-card h3 { margin-bottom: 15px; font-size: 1.3rem; }
+        .feature-card p { font-size: 0.95rem; color: #666; }
+
+        /* --- CHATBOT WIDGET UI --- */
+        .chat-toggle {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 65px; height: 65px; background: var(--primary); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 2000; transition: transform 0.3s;
+        }
+        .chat-toggle:hover { transform: scale(1.1) rotate(10deg); }
+        
+        .chat-interface {
+            position: fixed; bottom: 110px; right: 30px;
+            width: 380px; height: 550px; background: white;
+            border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none; 
+            flex-direction: column; overflow: hidden; z-index: 2000;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); }}
+
+        .chat-header { background: var(--primary); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .chat-body { flex: 1; padding: 20px; background: #f4f7f6; overflow-y: auto; }
+        .chat-input-area { padding: 15px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center;}
+        .chat-input-area input { flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none; background: #f9f9f9; }
+        .chat-input-area button { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; transition: 0.2s;}
+        .chat-input-area button:hover { background: #1b5e20; }
+
+        /* Footer */
+        footer { background: var(--dark); color: #aaa; padding: 50px 0; text-align: center; }
+        footer p { margin-top: 20px; font-size: 0.9rem; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; } 
+            .chat-interface { width: 90%; right: 5%; bottom: 100px; height: 450px; }
+            .about-container { flex-direction: column; }
+            .about-img, .about-text { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <i class="fas fa-seedling"></i>&nbsp;AgriSahayak
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home" data-translate="nav_home">Home</a></li>
+            <li><a href="#about" data-translate="nav_about">About Us</a></li>
+            <li><a href="#features" data-translate="nav_services">Services</a></li>
+            <li>
+                <select id="languageSelect" class="lang-select" onchange="changeLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी (Hindi)</option>
+                    <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                </select>
+            </li> 
+            <li><a href="login.html" class="btn-nav" data-translate="nav_login">Login / Register</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="home">
+        <div>
+            <h1 data-translate="hero_title">Smart Farming for a <br>Better Future</h1>
+            <p data-translate="hero_desc">Your digital agriculture assistant. Get AI-driven crop advice, disease detection, real-time market insights, and government scheme recommendations in one place.</p>
+            <a href="login.html" class="btn-hero" data-translate="hero_btn">Get Started Now</a>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="about-container">
+            <div class="about-img">
+                <img src="image/agriabout.jpg" alt="Farmer using tablet technology">
+            </div>
+            <div class="about-text">
+                <span class="section-header" data-translate="about_small">About AgriSahayak</span>
+                <h2 data-translate="about_title">Bridging Tradition with Technology</h2>
+                <p data-translate="about_p1">Farming is the backbone of our nation, but it faces modern challenges. AgriSahayak is designed to empower farmers by combining traditional agricultural wisdom with cutting-edge Artificial Intelligence and satellite data.</p>
+                <p data-translate="about_p2">Whether you need to know the right fertilizer dosage, check tomorrow's rainfall probability, or find the best price at the local Mandi, AgriSahayak is your 24/7 companion. Our goal is to increase yields, reduce costs, and improve the livelihood of every farmer.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <h2 data-translate="service_title">Our Key Services</h2>
+        <div class="feature-grid">
+            
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-wheat-awn"></i></div>
+                <h3 data-translate="card1_title">Crop Recommendation</h3>
+                <p data-translate="card1_desc">AI suggestions based on soil health card data, local rainfall patterns, and temperature.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-flask-vial"></i></div>
+                <h3 data-translate="card2_title">Fertilizer Calculator</h3>
+                <p data-translate="card2_desc">Calculate precise NPK requirements for your specific crop to save costs and improve soil.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-camera-retro"></i></div>
+                <h3 data-translate="card3_title">Pest & Disease Detection</h3>
+                <p data-translate="card3_desc">Simply upload a photo of an affected leaf. Our AI will identify the disease and suggest remedies.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-cloud-showers-heavy"></i></div>
+                <h3 data-translate="card4_title">Weather Alerts</h3>
+                <p data-translate="card4_desc">Hyper-local weather forecasts, storm warnings, and irrigation advisories.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-hand-holding-dollar"></i></div>
+                <h3 data-translate="card5_title">Govt. Schemes</h3>
+                <p data-translate="card5_desc">Discover eligibility for PM-Kisan Samman Nidhi, PMFBY insurance, and KCC loans.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-shop"></i></div>
+                <h3 data-translate="card6_title">Market (Mandi) Prices</h3>
+                <p data-translate="card6_desc">Live price updates from nearby APMC markets to help you sell at the right time.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-drone"></i></div>
+                <h3 data-translate="card7_title">Digital Farming Guide</h3>
+                <p data-translate="card7_desc">Learn about precision agriculture, drone usage for spraying, and IoT soil sensors.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-leaf"></i></div>
+                <h3 data-translate="card8_title">Natural Farming Tips</h3>
+                <p data-translate="card8_desc">Guidance on organic composting, Jeevamrutham, and reducing chemical dependency.</p>
+            </div>
+
+            <div class="feature-card" onclick="toggleChat()">
+                <div class="icon-box"><i class="fas fa-robot"></i></div>
+                <h3 data-translate="card9_title">AI Chatbot Assistant</h3>
+                <p data-translate="card9_desc">Have a question? Chat with our multilingual assistant anytime for instant advice.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="chat-toggle" onclick="toggleChat()">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <div class="chat-interface" id="chatBox">
+        <div class="chat-header">
+            <span><i class="fas fa-robot"></i> <span data-translate="chat_header">AgriSahayak Assistant</span></span>
+            <span onclick="toggleChat()" style="cursor:pointer; font-size: 1.2rem;">&times;</span>
+        </div>
+        <div class="chat-body">
+            <div style="display: flex; margin-bottom: 15px;">
+                <div style="width: 35px; height: 35px; background: #e8f5e9; border-radius: 50%; display:flex; align-items:center; justify-content:center; margin-right: 10px; color: var(--primary);"><i class="fas fa-robot"></i></div>
+                <p style="background: white; padding:12px 15px; border-radius: 0 15px 15px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); max-width: 80%;" data-translate="chat_welcome">Namaste! I am AgriSmart. Ask me about crops, weather, or market prices.</p>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" placeholder="Type your query here..." data-translate-placeholder="chat_placeholder">
+            <button><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="logo" style="justify-content: center; margin-bottom: 20px; color: white;">
+            <i class="fas fa-seedling"></i>&nbsp;AgriSahayak
+        </div>
+        <p>&copy; 2025 AgriSahayak Solutions. Empowering Indian Farmers.</p>
+    </footer>
+
+    <script>
+        function toggleChat() {
+            const chatBox = document.getElementById('chatBox');
+            if (chatBox.style.display === 'flex') {
+                chatBox.style.display = 'none';
+            } else {
+                chatBox.style.display = 'flex';
+            }
+        }
+
+        // --- TRANSLATION DATA ---
+        const translations = {
+            en: {
+                nav_home: "Home",
+                nav_about: "About Us",
+                nav_services: "Services",
+                nav_login: "Login / Register",
+                hero_title: "Smart Farming for a <br>Better Future",
+                hero_desc: "Your digital agriculture assistant. Get AI-driven crop advice, disease detection, real-time market insights, and government scheme recommendations in one place.",
+                hero_btn: "Get Started Now",
+                about_small: "About AgriSmart",
+                about_title: "Bridging Tradition with Technology",
+                about_p1: "Farming is the backbone of our nation, but it faces modern challenges. AgriSahayak is designed to empower farmers by combining traditional agricultural wisdom with cutting-edge Artificial Intelligence and satellite data.",
+                about_p2: "Whether you need to know the right fertilizer dosage, check tomorrow's rainfall probability, or find the best price at the local Mandi, AgriSahayak is your 24/7 companion. Our goal is to increase yields, reduce costs, and improve the livelihood of every farmer.",
+                service_title: "Our Key Services",
+                card1_title: "Crop Recommendation",
+                card1_desc: "AI suggestions based on soil health card data, local rainfall patterns, and temperature.",
+                card2_title: "Fertilizer Calculator",
+                card2_desc: "Calculate precise NPK requirements for your specific crop to save costs and improve soil.",
+                card3_title: "Pest & Disease Detection",
+                card3_desc: "Simply upload a photo of an affected leaf. Our AI will identify the disease and suggest remedies.",
+                card4_title: "Weather Alerts",
+                card4_desc: "Hyper-local weather forecasts, storm warnings, and irrigation advisories.",
+                card5_title: "Govt. Schemes",
+                card5_desc: "Discover eligibility for PM-Kisan Samman Nidhi, PMFBY insurance, and KCC loans.",
+                card6_title: "Market (Mandi) Prices",
+                card6_desc: "Live price updates from nearby APMC markets to help you sell at the right time.",
+                card7_title: "Digital Farming Guide",
+                card7_desc: "Learn about precision agriculture, drone usage for spraying, and IoT soil sensors.",
+                card8_title: "Natural Farming Tips",
+                card8_desc: "Guidance on organic composting, Jeevamrutham, and reducing chemical dependency.",
+                card9_title: "AI Chatbot Assistant",
+                card9_desc: "Have a question? Chat with our multilingual assistant anytime for instant advice.",
+                chat_header: "AgriSahayak Assistant",
+                chat_welcome: "Namaste! I am AgriSmart. Ask me about crops, weather, or market prices.",
+                chat_placeholder: "Type your query here..."
+            },
+            hi: {
+                nav_home: "होम",
+                nav_about: "हमारे बारे में",
+                nav_services: "सेवाएं",
+                nav_login: "लॉगिन / रजिस्टर",
+                hero_title: "स्मार्ट खेती, <br>बेहतर भविष्य",
+                hero_desc: "आपका डिजिटल कृषि सहायक। फसल सलाह, रोग पहचान, मंडी भाव और सरकारी योजनाओं की जानकारी एक ही जगह पर प्राप्त करें।",
+                hero_btn: "अभी शुरू करें",
+                about_small: "एग्रीस्मार्ट के बारे में",
+                about_title: "परंपरा और तकनीक का संगम",
+                about_p1: "खेती हमारे देश की रीढ़ है। एग्री सहायक किसानों को पारंपरिक ज्ञान और आधुनिक एआई तकनीक के साथ सशक्त बनाने के लिए बनाया गया है।",
+                about_p2: "चाहे खाद की सही मात्रा जाननी हो, बारिश की संभावना देखनी हो, या मंडी के भाव पता करने हों, एग्री सहायक आपका 24/7 साथी है। हमारा लक्ष्य उपज बढ़ाना और लागत कम करना है।",
+                service_title: "हमारी प्रमुख सेवाएं",
+                card1_title: "फसल सलाह",
+                card1_desc: "मिट्टी स्वास्थ्य कार्ड, बारिश और तापमान के आधार पर एआई सुझाव।",
+                card2_title: "उर्वरक कैलकुलेटर",
+                card2_desc: "लागत बचाने और मिट्टी सुधारने के लिए सही एनपीके (NPK) मात्रा की गणना करें।",
+                card3_title: "कीट और रोग पहचान",
+                card3_desc: "पत्ती की फोटो अपलोड करें। हमारा एआई बीमारी की पहचान करेगा और उपाय बताएगा।",
+                card4_title: "मौसम चेतावनी",
+                card4_desc: "स्थानीय मौसम पूर्वानुमान, तूफान की चेतावनी और सिंचाई सलाह।",
+                card5_title: "सरकारी योजनाएं",
+                card5_desc: "पीएम-किसान, फसल बीमा और केसीसी (KCC) ऋण के लिए पात्रता जांचें।",
+                card6_title: "मंडी भाव",
+                card6_desc: "सही समय पर बेचने के लिए नजदीकी मंडियों से लाइव भाव अपडेट।",
+                card7_title: "डिजिटल खेती गाइड",
+                card7_desc: "सटीक खेती, ड्रोन के उपयोग और मिट्टी सेंसर के बारे में जानें।",
+                card8_title: "प्राकृतिक खेती",
+                card8_desc: "जैविक खाद, जीवामृत और रसायनों को कम करने पर मार्गदर्शन।",
+                card9_title: "एआई चैटबॉट",
+                card9_desc: "कोई सवाल है? हमारे सहायक से किसी भी समय सलाह लें।",
+                chat_header: "कृषि सहायक",
+                chat_welcome: "नमस्ते! मैं एग्री सहायक हूँ। मुझसे फसल, मौसम या मंडी भाव के बारे में पूछें।",
+                chat_placeholder: "अपना सवाल यहाँ लिखें..."
+            },
+            or: {
+                nav_home: "ମୂଳ ପୃଷ୍ଠା",
+                nav_about: "ଆମ ବିଷୟରେ",
+                nav_services: "ସେବା",
+                nav_login: "ଲଗ୍ ଇନ୍ / ପଞ୍ଜିକରଣ",
+                hero_title: "ସ୍ମାର୍ଟ ଚାଷ,<br>ଉନ୍ନତ ଭବିଷ୍ୟତ",
+                hero_desc: "ଆପଣଙ୍କର ଡିଜିଟାଲ୍ କୃଷି ସହଯୋଗୀ | ଫସଲ ପରାମର୍ଶ, ରୋଗ ଚିହ୍ନଟ, ମଣ୍ଡି ଦର ଏବଂ ସରକାରୀ ଯୋଜନା ବିଷୟରେ ଜାଣନ୍ତୁ |",
+                hero_btn: "ଏବେ ଆରମ୍ଭ କରନ୍ତୁ",
+                about_small: "ଏଗ୍ରି ସହାୟକ ବିଷୟରେ",
+                about_title: "ପରମ୍ପରା ଏବଂ ବୈଷୟିକ ଜ୍ଞାନର ମିଳନ",
+                about_p1: "ଚାଷ ଆମ ଦେଶର ମେରୁଦଣ୍ଡ | ପାରମ୍ପାରିକ କୃଷି ଜ୍ଞାନ ଏବଂ ଆଧୁନିକ AI ଟେକ୍ନୋଲୋଜି ମାଧ୍ୟମରେ କୃଷକମାନଙ୍କୁ ସଶକ୍ତ କରିବା ପାଇଁ ଏଗ୍ରି ସହାୟକ ଡିଜାଇନ୍ କରାଯାଇଛି |",
+                about_p2: "ସାରର ସଠିକ୍ ପରିମାଣ ଜାଣିବା, ବର୍ଷା ବିଷୟରେ ଜାଣିବା କିମ୍ବା ମଣ୍ଡିରେ ସର୍ବୋତ୍ତମ ମୂଲ୍ୟ ପାଇବା ପାଇଁ, ଏଗ୍ରି ସହାୟକ ଆପଣଙ୍କ ସାଥୀ |",
+                service_title: "ଆମର ମୁଖ୍ୟ ସେବା",
+                card1_title: "ଫସଲ ପରାମର୍ଶ",
+                card1_desc: "ମୃତ୍ତିକା ସ୍ୱାସ୍ଥ୍ୟ କାର୍ଡ, ବର୍ଷା ଏବଂ ତାପମାତ୍ରା ଉପରେ ଆଧାରିତ AI ପରାମର୍ଶ |",
+                card2_title: "ସାର କାଲକୁଲେଟର",
+                card2_desc: "ଖର୍ଚ୍ଚ ବଞ୍ଚାଇବା ଏବଂ ମାଟିର ଉନ୍ନତି ପାଇଁ ସଠିକ୍ NPK ଆବଶ୍ୟକତା ଗଣନା କରନ୍ତୁ |",
+                card3_title: "ରୋଗ ଚିହ୍ନଟ",
+                card3_desc: "ପତ୍ରର ଫଟୋ ଅପଲୋଡ୍ କରନ୍ତୁ | ଆମର AI ରୋଗ ଚିହ୍ନଟ କରିବ ଏବଂ ପ୍ରତିକାର ପରାମର୍ଶ ଦେବ |",
+                card4_title: "ପାଣିପାଗ ସୂଚନା",
+                card4_desc: "ସ୍ଥାନୀୟ ପାଣିପାଗ ପୂର୍ବାନୁମାନ, ଝଡ ଚେତାବନୀ ଏବଂ ଜଳସେଚନ ପରାମର୍ଶ |",
+                card5_title: "ସରକାରୀ ଯୋଜନା",
+                card5_desc: "PM- କିଷାନ, ଫସଲ ବୀମା ଏବଂ KCC ଋଣ ପାଇଁ ଯୋଗ୍ୟତା ଜାଣନ୍ତୁ |",
+                card6_title: "ମଣ୍ଡି ଦର",
+                card6_desc: "ସଠିକ୍ ସମୟରେ ବିକ୍ରୟ କରିବାରେ ସାହାଯ୍ୟ କରିବାକୁ ନିକଟସ୍ଥ ମଣ୍ଡିରୁ ଲାଇଭ୍ ମୂଲ୍ୟ ଅପଡେଟ୍ |",
+                card7_title: "ଡିଜିଟାଲ୍ ଚାଷ ଗାଇଡ୍",
+                card7_desc: "ସଠିକ୍ କୃଷି, ଡ୍ରୋନ୍ ବ୍ୟବହାର ଏବଂ ମାଟି ସେନ୍ସର ବିଷୟରେ ଜାଣନ୍ତୁ |",
+                card8_title: "ପ୍ରାକୃତିକ ଚାଷ",
+                card8_desc: "ଜୈବିକ ସାର, ଜୀବାମୃତ ଏବଂ ରାସାୟନିକ ପଦାର୍ଥ ହ୍ରାସ ଉପରେ ମାର୍ଗଦର୍ଶନ |",
+                card9_title: "AI ଚାଟବୋଟ୍",
+                card9_desc: "କୌଣସି ପ୍ରଶ୍ନ ଅଛି କି? ଯେକୌଣସି ସମୟରେ ଆମର ସହକାରୀଙ୍କ ସହିତ ଚାଟ୍ କରନ୍ତୁ |",
+                chat_header: "କୃଷି ସହଯୋଗୀ",
+                chat_welcome: "ନମସ୍କାର! ମୁଁ ଏଗ୍ରି ସହାୟକ | ମୋତେ ଫସଲ, ପାଣିପାଗ କିମ୍ବା ବଜାର ମୂଲ୍ୟ ବିଷୟରେ ପଚାରନ୍ତୁ |",
+                chat_placeholder: "ଆପଣଙ୍କର ପ୍ରଶ୍ନ ଏଠାରେ ଲେଖନ୍ତୁ..."
+            }
+        };
+
+        function changeLanguage(lang) {
+            // Get all elements that need translation
+            const elements = document.querySelectorAll('[data-translate]');
+            
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    // Check if existing content has HTML tags (like <br>)
+                    if(translations[lang][key].includes('<br>')) {
+                         element.innerHTML = translations[lang][key];
+                    } else {
+                         element.innerText = translations[lang][key];
+                    }
+                }
+            });
+
+            // Handle Input Placeholders specifically
+            const placeholders = document.querySelectorAll('[data-translate-placeholder]');
+            placeholders.forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
