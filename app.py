@@ -1,23 +1,25 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import tensorflow as tf
+import tensorflow as tf # We still need this, but we use it lightly
 import numpy as np
 from PIL import Image
 import io
 
-# Initialize Flask App
 app = Flask(__name__)
-CORS(app)  # Allows the website to talk to this server
+CORS(app)
 
-# --- 1. LOAD YOUR MODEL ---
-print("⏳ Loading AI Model... Please wait...")
-# Ensure the filename matches exactly what you downloaded
-model = tf.keras.models.load_model('agri_smart_full_model.h5')
-print("✅ Model Loaded Successfully!")
+# --- 1. LOAD THE TFLITE MODEL (Lightweight) ---
+print("⏳ Loading TFLite Model...")
+interpreter = tf.lite.Interpreter(model_path="model.tflite")
+interpreter.allocate_tensors()
 
-# --- 2. DEFINE THE 38 CLASSES ---
-# These match the PlantVillage dataset order exactly
+# Get input and output details
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+print("✅ TFLite Model Loaded!")
+
+# --- 2. CLASS NAMES ---
 class_names = [
     'Apple - Apple Scab', 'Apple - Black Rot', 'Apple - Cedar Apple Rust', 'Apple - Healthy',
     'Blueberry - Healthy',
@@ -38,13 +40,14 @@ class_names = [
 ]
 
 def prepare_image(image, target_size):
-    """Prepares the user's image for the AI model"""
     if image.mode != "RGB":
         image = image.convert("RGB")
     image = image.resize(target_size)
     image = np.array(image)
-    image = np.expand_dims(image, axis=0) # Add batch dimension
-    image = image / 255.0  # Normalize pixel values
+    image = np.expand_dims(image, axis=0)
+    # TFLite expects float32
+    image = image.astype(np.float32) 
+    image = image / 255.0  
     return image
 
 @app.route('/predict', methods=['POST'])
@@ -55,17 +58,20 @@ def predict():
     file = request.files['file']
     
     try:
-        # Read and process the image
         image = Image.open(io.BytesIO(file.read()))
+        # TFLite usually expects 224x224, check your training if it fails
         processed_image = prepare_image(image, target_size=(224, 224))
         
-        # Make Prediction
-        prediction = model.predict(processed_image)
+        # --- PREDICTION USING TFLITE ---
+        interpreter.set_tensor(input_details[0]['index'], processed_image)
+        interpreter.invoke()
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+        
+        prediction = output_data[0]
         index = np.argmax(prediction)
         confidence = float(np.max(prediction)) * 100
         result = class_names[index]
         
-        # Simple Remedy Logic (You can expand this!)
         remedy = "Consult a local agriculture expert."
         if "Healthy" in result:
             remedy = "Your plant is healthy! Keep monitoring water and sunlight."
@@ -86,5 +92,4 @@ def predict():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Run the server on port 5000
     app.run(debug=True, port=5000)
